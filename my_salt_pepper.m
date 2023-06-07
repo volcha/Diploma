@@ -1,28 +1,28 @@
 close all; clear all;
 
-%% Исходное изображение
-orig_image = imread('4.png'); % считывание исходного изображения
-orig_image = rgb2gray(orig_image); % перевод изображения в полутон. вид
+%% РСЃС…РѕРґРЅРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ
+orig_image = imread('4.png'); % СЃС‡РёС‚С‹РІР°РЅРёРµ РёСЃС…РѕРґРЅРѕРіРѕ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
+orig_image = rgb2gray(orig_image); % РїРµСЂРµРІРѕРґ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РІ РїРѕР»СѓС‚РѕРЅ. РІРёРґ
 orig_image = im2double(orig_image);
-figure(1); imshow(orig_image,[]); % вывод исходного изображения
+figure(1); imshow(orig_image,[]); % РІС‹РІРѕРґ РёСЃС…РѕРґРЅРѕРіРѕ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
 
-%% Шум типа "соль & перец"
-salt_pepper_noise = imnoise(orig_image,'salt & pepper',0.4); % наложение шума типа "соль и перец"
-figure(2); imshow(salt_pepper_noise,[]); % вывод зашумлённого изображения
+%% РЁСѓРј С‚РёРїР° "СЃРѕР»СЊ & РїРµСЂРµС†"
+salt_pepper_noise = imnoise(orig_image,'salt & pepper',0.4); % РЅР°Р»РѕР¶РµРЅРёРµ С€СѓРјР° С‚РёРїР° "СЃРѕР»СЊ Рё РїРµСЂРµС†"
+figure(2); imshow(salt_pepper_noise,[]); % РІС‹РІРѕРґ Р·Р°С€СѓРјР»С‘РЅРЅРѕРіРѕ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
 
-%% Базовые для всей программы переменные
-%Wavefuncs = {'haar', 'sym2', 'sym3', 'sym4', 'sym5', 'sym6', 'sym7', 'sym8', 'bior 1.1', 'bior 1.3', 'bior 1.5', 'bior 2.2', 'bior 2.4', 'bior 2.6', 'bior 2.8', 'bior 3.1', 'bior 3.3', 'bior 3.5', 'bior 3.7', 'bior 3.9', 'bior 4.4', 'bior 5.5', 'bior 6.8', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db10', 'db20', 'coif2',  'coif3',  'coif4',  'coif5', 'rbio1.1', 'rbio 1.3', 'rbio 1.5', 'rbio 2.2', 'rbio 2.4', 'rbio 2.6', 'rbio 2.8', 'rbio 3.1', 'rbio 3.3', 'rbio 3.5', 'rbio 3.7', 'rbio 3.9', 'rbio 4.4', 'rbio 5.5', 'rbio 6.8', 'dmey'}; % тип вейвлета
-Wavefuncs = {'rbio2.2'}; % тип вейвлета
+%% Р‘Р°Р·РѕРІС‹Рµ РґР»СЏ РІСЃРµР№ РїСЂРѕРіСЂР°РјРјС‹ РїРµСЂРµРјРµРЅРЅС‹Рµ
+%Wavefuncs = {'haar', 'sym2', 'sym3', 'sym4', 'sym5', 'sym6', 'sym7', 'sym8', 'bior 1.1', 'bior 1.3', 'bior 1.5', 'bior 2.2', 'bior 2.4', 'bior 2.6', 'bior 2.8', 'bior 3.1', 'bior 3.3', 'bior 3.5', 'bior 3.7', 'bior 3.9', 'bior 4.4', 'bior 5.5', 'bior 6.8', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db10', 'db20', 'coif2',  'coif3',  'coif4',  'coif5', 'rbio1.1', 'rbio 1.3', 'rbio 1.5', 'rbio 2.2', 'rbio 2.4', 'rbio 2.6', 'rbio 2.8', 'rbio 3.1', 'rbio 3.3', 'rbio 3.5', 'rbio 3.7', 'rbio 3.9', 'rbio 4.4', 'rbio 5.5', 'rbio 6.8', 'dmey'}; % С‚РёРї РІРµР№РІР»РµС‚Р°
+Wavefuncs = {'rbio2.2'}; % С‚РёРї РІРµР№РІР»РµС‚Р°
 [si1, si2] = size(Wavefuncs);
-N = 1; % уровень разложения
-[n_size,m_size] = size(orig_image); % размеры изображения
-number_of_pixels = n_size * m_size; % количество пикселей
+N = 1; % СѓСЂРѕРІРµРЅСЊ СЂР°Р·Р»РѕР¶РµРЅРёСЏ
+[n_size,m_size] = size(orig_image); % СЂР°Р·РјРµСЂС‹ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
+number_of_pixels = n_size * m_size; % РєРѕР»РёС‡РµСЃС‚РІРѕ РїРёРєСЃРµР»РµР№
 
 min_err = 1;
 best_wave = 'a';
-for wave = 1:1.0:si2 % рассматриваем разные вейвлеты
+for wave = 1:1.0:si2 % СЂР°СЃСЃРјР°С‚СЂРёРІР°РµРј СЂР°Р·РЅС‹Рµ РІРµР№РІР»РµС‚С‹
     Wavefun = Wavefuncs{wave};
-    [C,S] = wavedec2(salt_pepper_noise,N,Wavefun); % декомпозиция
+    [C,S] = wavedec2(salt_pepper_noise,N,Wavefun); % РґРµРєРѕРјРїРѕР·РёС†РёСЏ
     [mc,nc]=size(C);
     Cn = C;
     S
@@ -31,7 +31,7 @@ for wave = 1:1.0:si2 % рассматриваем разные вейвлеты
         nk = nk + S(N+2-j,1) * S(N+2-j,2) * 3;
         nf = nc - nk;
         Cn(nf:end) = zeros(1,nc-nf+1);
-        no_salt_pepper = waverec2(Cn,S,Wavefun); % реконструкция
+        no_salt_pepper = waverec2(Cn,S,Wavefun); % СЂРµРєРѕРЅСЃС‚СЂСѓРєС†РёСЏ
         no_salt_pepper = no_salt_pepper -  min(no_salt_pepper (:));
         no_salt_pepper  = no_salt_pepper /max(no_salt_pepper (:));
         no_salt_pepper = imadjust(no_salt_pepper); 
@@ -40,7 +40,7 @@ for wave = 1:1.0:si2 % рассматриваем разные вейвлеты
         pow = subtraction.^2;
         err = sum(pow(:)) / number_of_pixels
         %pause;
-        if (min_err > err) % ищем минимальную ошибку
+        if (min_err > err) % РёС‰РµРј РјРёРЅРёРјР°Р»СЊРЅСѓСЋ РѕС€РёР±РєСѓ
             min_err = err;
             best_wave = Wavefun;
         end
@@ -51,10 +51,10 @@ end
 min_err
 best_wave
 
-%% Обработка с помощью низкочастотного фильтра Баттерворта
+%% РћР±СЂР°Р±РѕС‚РєР° СЃ РїРѕРјРѕС‰СЊСЋ РЅРёР·РєРѕС‡Р°СЃС‚РѕС‚РЅРѕРіРѕ С„РёР»СЊС‚СЂР° Р‘Р°С‚С‚РµСЂРІРѕСЂС‚Р°
 FT_img = fft2(double(salt_pepper_noise));
-n = 2; % чтобы не было звона
-D0 = 200; % это значение можно изменить
+n = 2; % С‡С‚РѕР±С‹ РЅРµ Р±С‹Р»Рѕ Р·РІРѕРЅР°
+D0 = 200; % СЌС‚Рѕ Р·РЅР°С‡РµРЅРёРµ РјРѕР¶РЅРѕ РёР·РјРµРЅРёС‚СЊ
 u = 0:(n_size-1);
 v = 0:(m_size-1);
 idx = find(u > n_size/2);
@@ -66,8 +66,8 @@ D = sqrt(U.^2 + V.^2);
 H = 1./(1 + (D./D0).^(2*n));
 G = H.*FT_img;
 output_image = real(ifft2(double(G))); 
-output_image = output_image -  min(output_image(:)); %нормировка
-output_image = output_image/max(output_image(:)); %нормировка
+output_image = output_image -  min(output_image(:)); %РЅРѕСЂРјРёСЂРѕРІРєР°
+output_image = output_image/max(output_image(:)); %РЅРѕСЂРјРёСЂРѕРІРєР°
 figure(6); output_image = imadjust(output_image);
 imshow(output_image, [ ]);
 
@@ -75,11 +75,11 @@ subtraction = orig_image - output_image;
 pow = subtraction.^2; 
 bfnch_err = sum(pow(:)) / number_of_pixels
 
-%% Обработка с помощью медианного фильтра
+%% РћР±СЂР°Р±РѕС‚РєР° СЃ РїРѕРјРѕС‰СЊСЋ РјРµРґРёР°РЅРЅРѕРіРѕ С„РёР»СЊС‚СЂР°
 med = medfilt2(salt_pepper_noise);
 med = medfilt2(med);
-med = med -  min(med(:)); %нормировка
-med = med/max(med(:)); %нормировка
+med = med -  min(med(:)); %РЅРѕСЂРјРёСЂРѕРІРєР°
+med = med/max(med(:)); %РЅРѕСЂРјРёСЂРѕРІРєР°
 figure(10); med = imadjust(med);
 imshow(med, [ ]);
 
