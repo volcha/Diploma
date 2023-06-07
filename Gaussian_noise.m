@@ -1,55 +1,55 @@
 close all; clear all;
 
-%% Исходное изображение
-orig_image = imread('8.png'); % считывание исходного изображения
-orig_image = rgb2gray(orig_image); % перевод изображения в полутон. вид
+%% РСЃС…РѕРґРЅРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ
+orig_image = imread('8.png'); % СЃС‡РёС‚С‹РІР°РЅРёРµ РёСЃС…РѕРґРЅРѕРіРѕ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
+orig_image = rgb2gray(orig_image); % РїРµСЂРµРІРѕРґ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РІ РїРѕР»СѓС‚РѕРЅ. РІРёРґ
 orig_image = im2double(orig_image);
-figure(1); imshow(orig_image,[]); % вывод исходного изображения
+figure(1); imshow(orig_image,[]); % РІС‹РІРѕРґ РёСЃС…РѕРґРЅРѕРіРѕ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
 
-%% Базовые для всей программы переменные
-%Wavefuncs = {'sym2', 'sym3', 'sym4', 'sym5', 'sym6', 'sym7', 'sym8', 'bior 1.1', 'bior 1.3', 'bior 1.5', 'bior 2.2', 'bior 2.4', 'bior 2.6', 'bior 2.8', 'bior 3.1', 'bior 3.3', 'bior 3.5', 'bior 3.7', 'bior 3.9', 'bior 4.4', 'bior 5.5', 'bior 6.8', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db10', 'db20', 'coif2',  'coif3',  'coif4',  'coif5', 'rbio1.1', 'rbio 1.3', 'rbio 1.5', 'rbio 2.2', 'rbio 2.4', 'rbio 2.6', 'rbio 2.8', 'rbio 3.1', 'rbio 3.3', 'rbio 3.5', 'rbio 3.7', 'rbio 3.9', 'rbio 4.4', 'rbio 5.5', 'rbio 6.8', 'dmey'}; % тип вейвлета
-Wavefuncs = {'rbio2.6'}; % тип вейвлета
+%% Р‘Р°Р·РѕРІС‹Рµ РґР»СЏ РІСЃРµР№ РїСЂРѕРіСЂР°РјРјС‹ РїРµСЂРµРјРµРЅРЅС‹Рµ
+%Wavefuncs = {'sym2', 'sym3', 'sym4', 'sym5', 'sym6', 'sym7', 'sym8', 'bior 1.1', 'bior 1.3', 'bior 1.5', 'bior 2.2', 'bior 2.4', 'bior 2.6', 'bior 2.8', 'bior 3.1', 'bior 3.3', 'bior 3.5', 'bior 3.7', 'bior 3.9', 'bior 4.4', 'bior 5.5', 'bior 6.8', 'db2', 'db3', 'db4', 'db5', 'db6', 'db7', 'db10', 'db20', 'coif2',  'coif3',  'coif4',  'coif5', 'rbio1.1', 'rbio 1.3', 'rbio 1.5', 'rbio 2.2', 'rbio 2.4', 'rbio 2.6', 'rbio 2.8', 'rbio 3.1', 'rbio 3.3', 'rbio 3.5', 'rbio 3.7', 'rbio 3.9', 'rbio 4.4', 'rbio 5.5', 'rbio 6.8', 'dmey'}; % С‚РёРї РІРµР№РІР»РµС‚Р°
+Wavefuncs = {'rbio2.6'}; % С‚РёРї РІРµР№РІР»РµС‚Р°
 [si1, si2] = size(Wavefuncs);
-N1 = 3; N2 = 1; % уровни разложения
-Thr_min = 0.0; Thr_max = 0.7; % пороги для удаления шума
-[n_size,m_size] = size(orig_image); % размеры изображения
-number_of_pixels = n_size * m_size; % количество пикселей
+N1 = 3; N2 = 1; % СѓСЂРѕРІРЅРё СЂР°Р·Р»РѕР¶РµРЅРёСЏ
+Thr_min = 0.0; Thr_max = 0.7; % РїРѕСЂРѕРіРё РґР»СЏ СѓРґР°Р»РµРЅРёСЏ С€СѓРјР°
+[n_size,m_size] = size(orig_image); % СЂР°Р·РјРµСЂС‹ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
+number_of_pixels = n_size * m_size; % РєРѕР»РёС‡РµСЃС‚РІРѕ РїРёРєСЃРµР»РµР№
 
-%% Гауссовский шум
-gaus_noise = imnoise(orig_image,'gaussian',0,0.1); % гауссовский шум
+%% Р“Р°СѓСЃСЃРѕРІСЃРєРёР№ С€СѓРј
+gaus_noise = imnoise(orig_image,'gaussian',0,0.1); % РіР°СѓСЃСЃРѕРІСЃРєРёР№ С€СѓРј
 figure(2); imshow(gaus_noise,[]);
 
 min_err = 1;
-best_Thr = 0.0; % лучший порог
-best_SorH = 's'; % лучший тип порога
-best_N=N1; % лучший уровень разложения
+best_Thr = 0.0; % Р»СѓС‡С€РёР№ РїРѕСЂРѕРі
+best_SorH = 's'; % Р»СѓС‡С€РёР№ С‚РёРї РїРѕСЂРѕРіР°
+best_N=N1; % Р»СѓС‡С€РёР№ СѓСЂРѕРІРµРЅСЊ СЂР°Р·Р»РѕР¶РµРЅРёСЏ
 best_Wavefun = 'a';
-for wave = 1:1.0:si2 % рассматриваем разные вейвлеты
+for wave = 1:1.0:si2 % СЂР°СЃСЃРјР°С‚СЂРёРІР°РµРј СЂР°Р·РЅС‹Рµ РІРµР№РІР»РµС‚С‹
     Wavefun = Wavefuncs{wave};
     for N = N1:-1.0:N2
-        [Csp,Ssp]=wavedec2(gaus_noise,N,Wavefun); % вейвлет-разложение
+        [Csp,Ssp]=wavedec2(gaus_noise,N,Wavefun); % РІРµР№РІР»РµС‚-СЂР°Р·Р»РѕР¶РµРЅРёРµ
         Wavefun
-        Ssp % вывод матрицы матрицей учета, которая хранит информацию о размерах матриц   
-                % аппроксимирующих и детализирующих коэффициентов всех уровней
-        for j = 0.0:1.0:1.0 % вид пороговой обработки
+        Ssp % РІС‹РІРѕРґ РјР°С‚СЂРёС†С‹ РјР°С‚СЂРёС†РµР№ СѓС‡РµС‚Р°, РєРѕС‚РѕСЂР°СЏ С…СЂР°РЅРёС‚ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ СЂР°Р·РјРµСЂР°С… РјР°С‚СЂРёС†   
+                % Р°РїРїСЂРѕРєСЃРёРјРёСЂСѓСЋС‰РёС… Рё РґРµС‚Р°Р»РёР·РёСЂСѓСЋС‰РёС… РєРѕСЌС„С„РёС†РёРµРЅС‚РѕРІ РІСЃРµС… СѓСЂРѕРІРЅРµР№
+        for j = 0.0:1.0:1.0 % РІРёРґ РїРѕСЂРѕРіРѕРІРѕР№ РѕР±СЂР°Р±РѕС‚РєРё
             if (j ==0)
                 SorH = 's';
             else
                 SorH = 'h';
             end
             Thr = 0.0;
-            for i = Thr_min:0.1:Thr_max % поиск лучшего порога
-                [no_gaus,Csp1,Ssp1,perf0,perfl2] = wdencmp('gbl',Csp,Ssp,Wavefun,N,i,SorH,1); % удаление
-                    % шума с помощью встроенной функции
-                no_gaus = no_gaus -  min(no_gaus(:)); %нормировка
-                no_gaus = no_gaus/max(no_gaus(:)); %нормировка
-                no_gaus = imadjust(no_gaus); % гамма-коррекция
-                % Находим квадраты разности яркости пикселей, их суммируем, делим на
-                % число пикселей, находим ошибку
+            for i = Thr_min:0.1:Thr_max % РїРѕРёСЃРє Р»СѓС‡С€РµРіРѕ РїРѕСЂРѕРіР°
+                [no_gaus,Csp1,Ssp1,perf0,perfl2] = wdencmp('gbl',Csp,Ssp,Wavefun,N,i,SorH,1); % СѓРґР°Р»РµРЅРёРµ
+                    % С€СѓРјР° СЃ РїРѕРјРѕС‰СЊСЋ РІСЃС‚СЂРѕРµРЅРЅРѕР№ С„СѓРЅРєС†РёРё
+                no_gaus = no_gaus -  min(no_gaus(:)); %РЅРѕСЂРјРёСЂРѕРІРєР°
+                no_gaus = no_gaus/max(no_gaus(:)); %РЅРѕСЂРјРёСЂРѕРІРєР°
+                no_gaus = imadjust(no_gaus); % РіР°РјРјР°-РєРѕСЂСЂРµРєС†РёСЏ
+                % РќР°С…РѕРґРёРј РєРІР°РґСЂР°С‚С‹ СЂР°Р·РЅРѕСЃС‚Рё СЏСЂРєРѕСЃС‚Рё РїРёРєСЃРµР»РµР№, РёС… СЃСѓРјРјРёСЂСѓРµРј, РґРµР»РёРј РЅР°
+                % С‡РёСЃР»Рѕ РїРёРєСЃРµР»РµР№, РЅР°С…РѕРґРёРј РѕС€РёР±РєСѓ
                 subtraction = orig_image - no_gaus;
                 pow = subtraction.^2;
                 err = sum(pow(:)) / number_of_pixels;
-                if (min_err > err) % ищем минимальную ошибку
+                if (min_err > err) % РёС‰РµРј РјРёРЅРёРјР°Р»СЊРЅСѓСЋ РѕС€РёР±РєСѓ
                     min_err = err;
                     Thr = i;
                     best_Thr = i;
@@ -66,18 +66,18 @@ for wave = 1:1.0:si2 % рассматриваем разные вейвлеты
                 end
             end
             if (Thr > 0.0)
-                for i = Thr-0.1:0.01:Thr+0.1 % поиск лучшего порога
-                    [no_gaus,Csp1,Ssp1,perf0,perfl2] = wdencmp('gbl',Csp,Ssp,Wavefun,N,i,SorH,1); % удаление
-                        % шума с помощью встроенной функции
-                    no_gaus = no_gaus -  min(no_gaus(:)); %нормировка
-                    no_gaus = no_gaus/max(no_gaus(:)); %нормировка
-                    no_gaus = imadjust(no_gaus); % гамма-коррекция
-                    % Находим квадраты разности яркости пикселей, их суммируем, делим на
-                    % число пикселей, находим ошибку
+                for i = Thr-0.1:0.01:Thr+0.1 % РїРѕРёСЃРє Р»СѓС‡С€РµРіРѕ РїРѕСЂРѕРіР°
+                    [no_gaus,Csp1,Ssp1,perf0,perfl2] = wdencmp('gbl',Csp,Ssp,Wavefun,N,i,SorH,1); % СѓРґР°Р»РµРЅРёРµ
+                        % С€СѓРјР° СЃ РїРѕРјРѕС‰СЊСЋ РІСЃС‚СЂРѕРµРЅРЅРѕР№ С„СѓРЅРєС†РёРё
+                    no_gaus = no_gaus -  min(no_gaus(:)); %РЅРѕСЂРјРёСЂРѕРІРєР°
+                    no_gaus = no_gaus/max(no_gaus(:)); %РЅРѕСЂРјРёСЂРѕРІРєР°
+                    no_gaus = imadjust(no_gaus); % РіР°РјРјР°-РєРѕСЂСЂРµРєС†РёСЏ
+                    % РќР°С…РѕРґРёРј РєРІР°РґСЂР°С‚С‹ СЂР°Р·РЅРѕСЃС‚Рё СЏСЂРєРѕСЃС‚Рё РїРёРєСЃРµР»РµР№, РёС… СЃСѓРјРјРёСЂСѓРµРј, РґРµР»РёРј РЅР°
+                    % С‡РёСЃР»Рѕ РїРёРєСЃРµР»РµР№, РЅР°С…РѕРґРёРј РѕС€РёР±РєСѓ
                     subtraction = orig_image - no_gaus; 
                     pow = subtraction.^2;
                     err = sum(pow(:)) / number_of_pixels;
-                    if (min_err > err) % ищем минимальную ошибку
+                    if (min_err > err) % РёС‰РµРј РјРёРЅРёРјР°Р»СЊРЅСѓСЋ РѕС€РёР±РєСѓ
                         min_err = err;
                         best_Thr = i;
                         best_SorH = SorH;
@@ -101,14 +101,14 @@ best_Thr
 best_N
 best_Wavefun
 min_err
-[Csp,Ssp]=wavedec2(gaus_noise,best_N,best_Wavefun); % вейвлет-разложение
+[Csp,Ssp]=wavedec2(gaus_noise,best_N,best_Wavefun); % РІРµР№РІР»РµС‚-СЂР°Р·Р»РѕР¶РµРЅРёРµ
 [no_gaus,Csp1,Ssp1,perf0,perfl2] = wdencmp('gbl',Csp,Ssp,best_Wavefun,best_N,best_Thr,best_SorH,1);
 figure(5); no_gaus = imadjust(no_gaus); imshow(no_gaus,[]);
 
-%% Обработка с помощью низкочастотного фильтра Баттерворта
+%% РћР±СЂР°Р±РѕС‚РєР° СЃ РїРѕРјРѕС‰СЊСЋ РЅРёР·РєРѕС‡Р°СЃС‚РѕС‚РЅРѕРіРѕ С„РёР»СЊС‚СЂР° Р‘Р°С‚С‚РµСЂРІРѕСЂС‚Р°
 FT_img = fft2(double(gaus_noise));
-n = 2; % чтобы не было звона
-D0 = 200; % это значение можно изменить
+n = 2; % С‡С‚РѕР±С‹ РЅРµ Р±С‹Р»Рѕ Р·РІРѕРЅР°
+D0 = 200; % СЌС‚Рѕ Р·РЅР°С‡РµРЅРёРµ РјРѕР¶РЅРѕ РёР·РјРµРЅРёС‚СЊ
 
 u = 0:(n_size-1);
 v = 0:(m_size-1);
@@ -127,8 +127,8 @@ G = H.*FT_img;
 
 output_image = real(ifft2(double(G))); 
 
-output_image = output_image -  min(output_image(:)); %нормировка
-output_image = output_image/max(output_image(:)); %нормировка
+output_image = output_image -  min(output_image(:)); %РЅРѕСЂРјРёСЂРѕРІРєР°
+output_image = output_image/max(output_image(:)); %РЅРѕСЂРјРёСЂРѕРІРєР°
 figure(6); output_image = imadjust(output_image); 
 imshow(output_image, [ ]);
 
